@@ -1,18 +1,24 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import ContainerBox from "./ContainerBox";
+import { MyContext } from "./MyContext";
+
 
 function App() {
 
-  const [weather, setWeather] = useState(0);
-  var dat;
-  async function getWeather() {
+  const [weather, setWeather] = useState(null);
+  const [text, setText] = useState('')
+  // let dat;
+  let y;
 
-    dat = await axios.get('https://ipwho.is').then(res => dat = res.data.city).catch(err => console.log(err));
-    console.log(dat);
+  async function getWeather(cityData) {
+
+    // dat = await axios.get('https://ipwho.is').then(res => dat = res.data.city).catch(err => console.log(err));
+    // console.log(dat);
     let x;
-    await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${dat}&appid=def17f16a0736a8ee47c5fa01f45a5f3&units=metric`).then(res => x = res.data.main.temp).catch(err => console.log(err))
+    await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${cityData}&appid=def17f16a0736a8ee47c5fa01f45a5f3&units=metric`).then(res => {x = res.data.main.temp; y = res.data.weather[0].description; }).catch(err => console.log(err))
     console.log(x);
-
+    console.log(y)
     setWeather(x);
   }
 
@@ -24,9 +30,12 @@ function App() {
 
   return (
     <div className="App">
-      <h1>this is testing </h1>
-      <button onClick={getWeather} className="bg-indigo-800 text-4xl m-4 p-4 text-white">Get Weather</button>
-      <h1>weather is {weather}</h1>
+      <MyContext.Provider value={{text , setText}}>
+      <ContainerBox getWeather={getWeather} />
+      <h1 className="text-4xl text-white m-auto">weather is {weather}</h1>
+      <p>{y}</p>
+
+      </MyContext.Provider>
     </div>
   );
 }
